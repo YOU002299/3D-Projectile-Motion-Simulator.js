@@ -24,7 +24,11 @@ document.body.style.margin = '0';
 const controls = new OrbitControls(camera, renderer.domElement);
 
 controls.enableDamping = true;
-controls.dampingfactor = 0.08;
+controls.dampingFactor = 0.08;
+controls.enablePan = true; 
+controls.screenSpacePanning = true;
+controls.minDistance = 0.1;
+controls.maxDistance = 100000;
 
 // Keyboard controls setup 
 const keys = {};
@@ -76,9 +80,23 @@ const axesHelper = new THREE.AxesHelper(2000);
 scene.add(axesHelper);
 
 // Grid floor setup
-const grid = new 
-THREE.GridHelper(2000, 2000);
+let gridSize = 2000;
+let divisions = 200;
+const gridHelper = new THREE.GridHelper(gridSize, divisions);
 scene.add(grid);
+
+// Function to update grid
+function updateGrid(size, numberOfDivisions) {
+    scene.remove(grid)
+    grid.geometry.dispose();
+    grid.material.dispose();
+    grid = new THREE.GridHelper(size, numberOfDivisions,0x888888, 0x444444);
+
+    scene.add(grid);
+    gridSize = size;
+    divisions = numberOfDivisions;
+}
+updateGrid(5000,5000);
 
 // Lighting setup
 const light = new 
