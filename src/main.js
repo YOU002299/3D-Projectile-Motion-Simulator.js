@@ -79,24 +79,36 @@ controls.maxDistance = 100000;
 const axesHelper = new THREE.AxesHelper(2000);
 scene.add(axesHelper);
 
-// Grid floor setup
-let gridSize = 2000;
-let divisions = 200;
-const gridHelper = new THREE.GridHelper(gridSize, divisions);
-scene.add(grid);
 
-// Function to update grid
-function updateGrid(size, numberOfDivisions) {
-    scene.remove(grid)
-    grid.geometry.dispose();
-    grid.material.dispose();
-    grid = new THREE.GridHelper(size, numberOfDivisions,0x888888, 0x444444);
+// Dynamic grid function
+let gridRadius = 100;
+let gridSpacing = 1;
+let grid; 
 
+//Create grid
+function createGrid(){
+    if (grid) {
+        scene.remove(grid);
+        grid.geometry.dispose();
+        grid.material.dispose();
+    }
+    const divisions = Math.max(2,Math.round((gridRadius * 2) / gridSpacing));
+    const actualSize = divisions * gridSpacing;
+    grid = new THREE.GridHelper(actualSize, divisions, 0x777777, 0x444444);
     scene.add(grid);
-    gridSize = size;
-    divisions = numberOfDivisions;
 }
-updateGrid(5000,5000);
+
+createGrid();
+
+//function to move grid with camera target
+function updateGridPosition() {
+    const spacing = gridSpacing;
+    const x = Math.round(controls.target.x / spacing) * spacing;
+    const z = Math.round(controls.target.z / spacing) * spacing;
+    grid .position.set(x, 0, z);
+}
+
+
 
 // Lighting setup
 const light = new 
@@ -109,6 +121,7 @@ function animate() {
     moveCamera();
     controls.update();
     renderer.render(scene, camera);
+    updateGridPosition();
 }
 animate();
 
