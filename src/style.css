@@ -135,7 +135,7 @@ code {
 
   .framework,
   .vite {
-    position: absolute;
+    position: fixed;
   }
 
   .framework {
@@ -293,4 +293,169 @@ code {
     right: 0;
     border-right-color: var(--border);
   }
+}
+/* Axes settings panel */
+#axes-settings {
+
+    position: absolute;
+
+    top: 15px;
+
+    right: 15px;
+
+    z-index: 100;
+
+    font-family: Arial, sans-serif;
+
+}
+
+/* Settings button */
+
+#axisButton {
+
+    background: #292929;
+
+    color: white;
+
+    border: 1px solid #666;
+
+    border-radius: 7px;
+
+    padding: 10px 15px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+
+}
+
+#axisButton:hover {
+
+    background: #444;
+
+}
+
+/* Settings panel */
+
+#axisPanel {
+
+    display: none;
+
+    width: 260px;
+
+    margin-top: 8px;
+
+    padding: 16px;
+
+    background: rgba(25, 25, 25, 0.97);
+
+    color: white;
+
+    border: 1px solid #555;
+
+    border-radius: 8px;
+
+}
+
+/* Panel heading */
+
+#axisPanel h3 {
+
+    margin-top: 0;
+
+    margin-bottom: 20px;
+
+}
+
+/* Individual axis controls */
+
+.axis-control {
+
+    margin-bottom: 22px;
+
+}
+
+.axis-control label {
+
+    display: block;
+
+    margin-bottom: 10px;
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+}
+
+/* Slider and number input layout */
+
+.axis-inputs {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+/* Sliders */
+
+.axis-inputs input[type="range"] {
+
+    flex: 1;
+
+    min-width: 0;
+
+    cursor: pointer;
+
+}
+
+/* Number boxes */
+
+.axis-inputs input[type="number"] {
+
+    width: 65px;
+
+    padding: 6px;
+
+    background: #333;
+
+    color: white;
+
+    border: 1px solid #666;
+
+    border-radius: 5px;
+
+}
+
+/* Axis colours */
+
+.x-axis label {
+
+    color: #ff5555;
+
+}
+
+.y-axis label {
+
+    color: #55dd77;
+
+}
+
+.z-axis label {
+
+    color: #5599ff;
+
+}
+@media (max-width: 600px) {
+    #axes-settings {
+        top: 10px;
+        right: 10px;
+    }
+
+    #axisPanel {
+        width: 230px;
+        padding: 12px;
+    }
 }

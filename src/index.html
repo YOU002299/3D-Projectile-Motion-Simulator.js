@@ -1,0 +1,106 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D-Projectile-Motion-Simulator</title>
+    <link rel="stylesheet" href="/src/style.css">
+  </head>
+
+  <body>
+    <div id="app"></div>
+
+    <!-- Axes Settings Panel -->
+    <div id="axes-settings">
+
+      <button id="axisButton">
+        ⚙ Axes Settings
+      </button>
+
+      <div id="axisPanel">
+
+        <h3>Axis Settings</h3>
+
+        <!-- X AXIS -->
+        <div class="axis-control x-axis">
+          <label for="xSlider">X Axis Scale</label>
+
+          <div class="axis-inputs">
+            <input
+              type="range"
+              id="xSlider"
+              min="0.5"
+              max="100"
+              step="any"
+              value="1"
+            >
+
+            <input
+              type="number"
+              id="xInput"
+              min="0.5"
+              max="100"
+              step="any"
+              value="1"
+            >
+          </div>
+        </div>
+
+        <!-- Y AXIS -->
+        <div class="axis-control y-axis">
+          <label for="ySlider">Y Axis Scale</label>
+
+          <div class="axis-inputs">
+            <input
+              type="range"
+              id="ySlider"
+              min="0.5"
+              max="100"
+              step="any"
+              value="1"
+            >
+
+            <input
+              type="number"
+              id="yInput"
+              min="0.5"
+              max="100"
+              step="any"
+              value="1"
+            >
+          </div>
+        </div>
+
+        <!-- Z AXIS -->
+        <div class="axis-control z-axis">
+          <label for="zSlider">Z Axis Scale</label>
+
+          <div class="axis-inputs">
+            <input
+              type="range"
+              id="zSlider"
+              min="0.5"
+              max="100"
+              step="any"
+              value="1"
+            >
+
+            <input
+              type="number"
+              id="zInput"
+              min="0.5"
+              max="100"
+              step="any"
+              value="1"
+            >
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

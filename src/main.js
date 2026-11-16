@@ -75,9 +75,363 @@ controls.screenSpacePanning = true;
 controls.minDistance = 0.1;
 controls.maxDistance = 100000;
 
-// Coordinate axes setup
-const axesHelper = new THREE.AxesHelper(2000);
-scene.add(axesHelper);
+// Updated Coordinate axes setup
+const axisGroup = new THREE.Group();
+
+scene.add(axisGroup);
+
+// Independent axis intervals (metres)
+
+let xScale = 1;
+
+let yScale = 1;
+
+let zScale = 1;
+
+// Axis line length
+
+const axisLength = 100000;
+
+// Create axis lines
+
+function createAxis(start, end, color) {
+
+    const geometry = new THREE.BufferGeometry();
+
+    geometry.setFromPoints([
+
+        new THREE.Vector3(...start),
+
+        new THREE.Vector3(...end)
+
+    ]);
+
+    const material = new THREE.LineBasicMaterial({
+
+        color: color
+
+    });
+
+    const line = new THREE.Line(geometry, material);
+
+    axisGroup.add(line);
+
+}
+
+createAxis(
+
+    [-axisLength, 0, 0],
+
+    [axisLength, 0, 0],
+
+    0xff3333
+
+);
+
+createAxis(
+
+    [0, -axisLength, 0],
+
+    [0, axisLength, 0],
+
+    0x33ff33
+
+);
+
+createAxis(
+
+    [0, 0, -axisLength],
+
+    [0, 0, axisLength],
+
+    0x3388ff
+
+);
+
+// Create numbered coordinate labels
+
+function createLabel(text, color, position, size) {
+
+    const canvas = document.createElement('canvas');
+
+    canvas.width = 256;
+
+    canvas.height = 128;
+
+    const context = canvas.getContext('2d');
+
+    context.clearRect(0, 0, 256, 128);
+
+    context.font = 'bold 64px Arial';
+
+    context.textAlign = 'center';
+
+    context.textBaseline = 'middle';
+
+    context.fillStyle = color;
+
+    context.fillText(text, 128, 64);
+
+    const texture = new THREE.CanvasTexture(canvas);
+
+    const material = new THREE.SpriteMaterial({
+
+        map: texture,
+
+        transparent: true,
+
+        depthTest: false
+
+    });
+
+    const sprite = new THREE.Sprite(material);
+
+    sprite.position.copy(position);
+
+    sprite.scale.set(size * 2, size, 1);
+
+    axisGroup.add(sprite);
+
+}
+
+// Clear old labels and ticks, keeping axis lines
+
+function clearAxisMarkers() {
+
+    const removable = axisGroup.children.slice(3);
+
+    removable.forEach(object => {
+
+        axisGroup.remove(object);
+
+        if (object.geometry) object.geometry.dispose();
+
+        if (object.material) {
+
+            if (object.material.map) {
+
+                object.material.map.dispose();
+
+            }
+
+            object.material.dispose();
+
+        }
+
+    });
+
+}
+
+// Generate numbered axis markings
+
+let lastMarkerPosition = '';
+
+function updateAxisMarkers() {
+
+    const centerX = Math.round(controls.target.x / xScale);
+
+    const centerY = Math.round(controls.target.y / yScale);
+
+    const centerZ = Math.round(controls.target.z / zScale);
+
+    const markerPosition =
+
+        `${centerX},${centerY},${centerZ},${xScale},${yScale},${zScale}`;
+
+    if (markerPosition === lastMarkerPosition) return;
+
+    lastMarkerPosition = markerPosition;
+
+    clearAxisMarkers();
+
+    const count = 15;
+
+    // X AXIS
+
+    for (let i = -count; i <= count; i++) {
+
+        const value = (centerX + i) * xScale;
+
+        const position = new THREE.Vector3(value, 0, 0);
+
+        createLabel(
+
+            value.toString(),
+
+            '#ff4444',
+
+            position.clone().add(new THREE.Vector3(0, 0.7, 0)),
+
+            Math.max(0.3, xScale * 0.35)
+
+        );
+
+    }
+
+    // Y AXIS
+
+    for (let i = -count; i <= count; i++) {
+
+        const value = (centerY + i) * yScale;
+
+        const position = new THREE.Vector3(0, value, 0);
+
+        createLabel(
+
+            value.toString(),
+
+            '#44ff44',
+
+            position.clone().add(new THREE.Vector3(0.7, 0, 0)),
+
+            Math.max(0.3, yScale * 0.35)
+
+        );
+
+    }
+
+    // Z AXIS
+
+    for (let i = -count; i <= count; i++) {
+
+        const value = (centerZ + i) * zScale;
+
+        const position = new THREE.Vector3(0, 0, value);
+
+        createLabel(
+
+            value.toString(),
+
+            '#4488ff',
+
+            position.clone().add(new THREE.Vector3(0.7, 0, 0)),
+
+            Math.max(0.3, zScale * 0.35)
+
+        );
+
+    }
+
+}
+
+// Axes setup settings
+// Open and close settings panel
+
+const axisButton = document.getElementById('axisButton');
+
+const axisPanel = document.getElementById('axisPanel');
+
+axisButton.addEventListener('click', () => {
+
+    const isOpen = axisPanel.style.display === 'block';
+
+    axisPanel.style.display = isOpen ? 'none' : 'block';
+
+});
+
+// Connect slider and number input
+
+function connectAxisControls(axis) {
+
+    const slider = document.getElementById(axis + 'Slider');
+
+    const input = document.getElementById(axis + 'Input');
+
+    // Update the correct axis variable
+
+    function updateScale(value) {
+
+        const newValue = Number(value);
+
+        if (!Number.isFinite(newValue) || newValue <= 0) {
+
+            return;
+
+        }
+
+        if (axis === 'x') xScale = newValue;
+
+        if (axis === 'y') yScale = newValue;
+
+        if (axis === 'z') zScale = newValue;
+
+        lastMarkerPosition = '';
+
+        updateAxisMarkers();
+
+    }
+
+    // When slider moves
+
+    slider.addEventListener('input', () => {
+
+        input.value = slider.value;
+
+        updateScale(slider.value);
+
+    });
+
+    // When number is typed
+
+    input.addEventListener('input', () => {
+
+        const value = Number(input.value);
+
+        if (input.value === '' || !Number.isFinite(value)) {
+
+            return;
+
+        }
+
+        const min = Number(input.min);
+
+        const max = Number(input.max);
+
+        if (value < min || value > max) {
+
+            return;
+
+        }
+
+        slider.value = value;
+
+        updateScale(value);
+
+    });
+
+    // When number input loses focus, restore valid range
+
+    input.addEventListener('change', () => {
+
+        const min = Number(input.min);
+
+        const max = Number(input.max);
+
+        let value = Number(input.value);
+
+        if (!Number.isFinite(value)) value = 1;
+
+        value = Math.max(min, Math.min(max, value));
+
+        input.value = value;
+
+        slider.value = value;
+
+        updateScale(value);
+
+    });
+
+}
+
+// Initialise all three axes
+
+connectAxisControls('x');
+
+connectAxisControls('y');
+
+connectAxisControls('z');
+
+updateAxisMarkers();
 
 
 // Dynamic grid function
@@ -120,6 +474,7 @@ function animate() {
     requestAnimationFrame(animate);
     moveCamera();
     controls.update();
+    updateAxisMarkers();
     renderer.render(scene, camera);
     updateGridPosition();
 }
